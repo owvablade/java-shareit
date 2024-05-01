@@ -21,15 +21,17 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
-        if (user.getId() == null) {
-            user.setId(idCounter++);
-            users.add(user);
-        } else {
-            Optional<User> existingUser = findById(user.getId());
-            if (existingUser.isPresent()) {
-                int index = users.indexOf(existingUser.get());
-                users.set(index, user);
-            }
+        user.setId(idCounter++);
+        users.add(user);
+        return user;
+    }
+
+    @Override
+    public User update(User user) {
+        Optional<User> existingUser = findById(user.getId());
+        if (existingUser.isPresent()) {
+            int index = users.indexOf(existingUser.get());
+            users.set(index, user);
         }
         return user;
     }

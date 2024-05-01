@@ -9,6 +9,8 @@ public interface ItemRepository {
 
     Item save(Item item);
 
+    Item update(Item item);
+
     Optional<Item> findById(Long itemId);
 
     List<Item> findAllByUser(Long userId);

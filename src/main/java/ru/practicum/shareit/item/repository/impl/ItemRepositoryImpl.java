@@ -21,15 +21,18 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public Item save(Item item) {
         List<Item> userItems = items.computeIfAbsent(item.getOwner(), k -> new ArrayList<>());
-        if (item.getId() == null) {
-            item.setId(idCounter++);
-            userItems.add(item);
-        } else {
-            Optional<Item> existingItem = findById(item.getId());
-            if (existingItem.isPresent()) {
-                int index = userItems.indexOf(existingItem.get());
-                userItems.set(index, item);
-            }
+        item.setId(idCounter++);
+        userItems.add(item);
+        return item;
+    }
+
+    @Override
+    public Item update(Item item) {
+        List<Item> userItems = items.get(item.getOwner());
+        Optional<Item> existingItem = findById(item.getId());
+        if (existingItem.isPresent()) {
+            int index = userItems.indexOf(existingItem.get());
+            userItems.set(index, item);
         }
         return item;
     }
