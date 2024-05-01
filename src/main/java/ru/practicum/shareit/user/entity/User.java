@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Getter
@@ -17,8 +15,6 @@ public class User {
 
     private String name;
 
-    @NotBlank
-    @Email(message = "Invalid email")
     private String email;
 
     @Override

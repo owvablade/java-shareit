@@ -6,22 +6,17 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.exception.UserDuplicateEmailException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
-import ru.practicum.shareit.user.exception.UserUpdateValidationException;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.UserService;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final Validator validator;
     private final UserRepository userRepository;
 
     @Override
@@ -41,13 +36,6 @@ public class UserServiceImpl implements UserService {
             checkUniqueEmail(userDto.getEmail());
         }
         user.setEmail(userDto.getEmail() == null ? user.getEmail() : userDto.getEmail());
-
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
-        if (!violations.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            violations.forEach(v -> sb.append(v.getMessage()).append(" "));
-            throw new UserUpdateValidationException(sb.toString());
-        }
 
         return UserMapper.toUserDto(userRepository.save(user));
     }

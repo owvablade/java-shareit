@@ -7,25 +7,20 @@ import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.exception.ItemOwnerNotFoundException;
 import ru.practicum.shareit.item.exception.ItemUpdateOwnerException;
-import ru.practicum.shareit.item.exception.ItemUpdateValidationException;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
-    private final Validator validator;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
@@ -41,25 +36,16 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto updateItem(Long userId, Long itemId, ItemDto itemDto) {
         checkUserExists(userId);
         Item item = itemRepository.findById(itemId).orElseThrow(
-                () -> new ItemNotFoundException(String.format("Item with ID = %d not found", itemDto.getId()))
-        );
+                () -> new ItemNotFoundException(String.format("Item with ID = %d not found", itemDto.getId())));
 
         if (!Objects.equals(item.getOwner(), userId)) {
             throw new ItemUpdateOwnerException(
-                    String.format("Item owner ID cannot be updated from %d to %d", item.getOwner(), userId)
-            );
+                    String.format("Item owner ID cannot be updated from %d to %d", item.getOwner(), userId));
         }
 
         item.setName(itemDto.getName() == null ? item.getName() : itemDto.getName());
         item.setDescription(itemDto.getDescription() == null ? item.getDescription() : itemDto.getDescription());
         item.setAvailable(itemDto.getAvailable() == null ? item.getAvailable() : itemDto.getAvailable());
-
-        Set<ConstraintViolation<Item>> violations = validator.validate(item);
-        if (!violations.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            violations.forEach(v -> sb.append(v.getMessage()).append(" "));
-            throw new ItemUpdateValidationException(sb.toString());
-        }
 
         return ItemMapper.toItemDto(itemRepository.save(item));
     }

@@ -12,13 +12,10 @@ public class Item {
 
     private Long id;
 
-    @NotBlank
     private String name;
 
-    @NotBlank
     private String description;
 
-    @NotNull
     private Boolean available;
 
     private Long owner;
